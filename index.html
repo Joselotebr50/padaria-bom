@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#1D9E75" />
+<title>Padaria — Controle de Validade</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f4f4f2;color:#1a1a18;min-height:100vh}
+h1{font-size:18px;font-weight:500;padding:1rem;display:flex;align-items:center;gap:8px;background:#fff;border-bottom:1px solid #e0e0da}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #e0e0da;position:sticky;top:0;z-index:10}
+.tab{flex:1;height:44px;border:none;background:transparent;color:#888;font-size:13px;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent}
+.tab.active{color:#1D9E75;border-bottom:2px solid #1D9E75;font-weight:500}
+.wrap{padding:1rem;max-width:600px;margin:0 auto}
+.card{background:#fff;border:1px solid #e0e0da;border-radius:12px;padding:1rem;margin-bottom:1rem}
+.card h2{font-size:13px;font-weight:500;color:#888;margin-bottom:.75rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.full{grid-column:1/-1}
+label{font-size:12px;color:#aaa;display:block;margin-bottom:3px}
+input[type=text],input[type=date],input[type=number],select,textarea{width:100%;height:44px;border:1px solid #e0e0da;border-radius:8px;padding:0 12px;font-size:14px;background:#fafaf8;color:#1a1a18;font-family:inherit;-webkit-appearance:none}
+textarea{height:auto;padding:10px 12px;resize:vertical;line-height:1.5}
+input[readonly]{background:#f4f4f2;color:#aaa}
+.btn{height:44px;padding:0 16px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#1a1a18;font-size:14px;cursor:pointer;width:100%;margin-top:8px;font-family:inherit}
+.btn:active{background:#f4f4f2}
+.btn-sm{height:36px;padding:0 12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#1a1a18;font-size:13px;cursor:pointer;font-family:inherit}
+.btn-primary{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.btn-primary:active{background:#0F6E56}
+.alertas{margin-bottom:1rem}
+.alerta{display:flex;align-items:flex-start;gap:10px;padding:.75rem 1rem;border-radius:12px;margin-bottom:6px;font-size:13px;line-height:1.4}
+.alerta.vencido{background:#FCEBEB;border:1px solid #F7C1C1;color:#791F1F}
+.alerta.urgente{background:#FAEEDA;border:1px solid #FAC775;color:#633806}
+.items{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e0e0da;border-radius:12px;padding:.75rem 1rem}
+.item-body{flex:1;min-width:0}
+.item-name{font-size:14px;font-weight:500;color:#1a1a18}
+.item-meta{font-size:12px;color:#aaa;margin-top:3px}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.dot.ok{background:#1D9E75}.dot.warn{background:#EF9F27}.dot.bad{background:#E24B4A}
+.btn-icon{background:none;border:none;cursor:pointer;color:#aaa;font-size:20px;padding:4px;border-radius:6px;line-height:1;min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center}
+.btn-icon:active{background:#f4f4f2}
+.empty{text-align:center;color:#aaa;font-size:13px;padding:2rem 0}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;margin-left:4px;white-space:nowrap}
+.badge.ok{background:#E1F5EE;color:#085041}
+.badge.warn{background:#FAEEDA;color:#633806}
+.badge.bad{background:#FCEBEB;color:#791F1F}
+.badge.rec{background:#EEEDFE;color:#3C3489}
+.pitem{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e0e0da;border-radius:10px;padding:.75rem 1rem;font-size:14px}
+.pitem-name{flex:1;font-weight:500;min-width:0}
+.pitem-val{color:#aaa;font-size:12px;white-space:nowrap}
+.pitem input{height:36px;font-size:13px;padding:0 8px}
+.plist{display:flex;flex-direction:column;gap:8px}
+.sec{display:none}.sec.show{display:block}
+.btn-actions{display:flex;gap:2px}
+.ing-row{display:flex;gap:6px;margin-bottom:6px;align-items:center}
+.ing-row input{height:36px}
+.ing-list{margin-bottom:8px}
+.rec-card{background:#fff;border:1px solid #e0e0da;border-radius:12px;margin-bottom:8px;overflow:hidden}
+.rec-header{display:flex;align-items:center;padding:.85rem 1rem;gap:10px;min-height:52px}
+.rec-header-name{flex:1;font-weight:500;font-size:14px}
+.rec-body{padding:0 1rem 1rem;display:none}
+.rec-body.open{display:block}
+.ing-badge{display:inline-flex;align-items:center;gap:4px;background:#f4f4f2;border:1px solid #e0e0da;border-radius:20px;padding:4px 10px;font-size:12px;margin:2px}
+.preparo-text{font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1a1a18}
+.sem-receita{font-size:12px;color:#aaa;font-style:italic}
+.sec-label{font-size:11px;font-weight:500;color:#aaa;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<h1>🍞 Padaria — Validade</h1>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('producao')">Produção</button>
+  <button class="tab" onclick="showTab('produtos')">Produtos</button>
+  <button class="tab" onclick="showTab('receitas')">Receitas</button>
+</div>
+
+<!-- PRODUÇÃO -->
+<div id="sec-producao" class="sec show">
+<div class="wrap">
+  <div id="alertas" class="alertas"></div>
+  <div class="card">
+    <h2>Registrar produção</h2>
+    <div class="grid">
+      <div class="full">
+        <label>Produto</label>
+        <select id="sel-produto" onchange="preencherValidade()"><option value="">Selecione...</option></select>
+      </div>
+      <div>
+        <label>Início da venda</label>
+        <input type="date" id="inicio" onchange="preencherValidade()" />
+      </div>
+      <div>
+        <label>Validade</label>
+        <input type="text" id="val-calc" readonly placeholder="Automática" />
+      </div>
+      <div class="full">
+        <label>Quantidade produzida</label>
+        <input type="number" id="qtd" placeholder="Ex: 50" min="1" />
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="addProducao()">+ Adicionar produção</button>
+  </div>
+  <div class="items" id="lista"></div>
+</div>
+</div>
+
+<!-- PRODUTOS -->
+<div id="sec-produtos" class="sec">
+<div class="wrap">
+  <div class="card">
+    <h2>Cadastrar produto</h2>
+    <div class="grid">
+      <div class="full">
+        <label>Nome do produto</label>
+        <input type="text" id="p-nome" placeholder="Ex: Coxinha, Pão de queijo..." maxlength="60" />
+      </div>
+      <div class="full">
+        <label>Validade padrão (dias)</label>
+        <input type="number" id="p-dias" placeholder="Ex: 3" min="1" max="365" />
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="addProduto()">+ Cadastrar produto</button>
+  </div>
+  <div class="plist" id="lista-produtos"></div>
+</div>
+</div>
+
+<!-- RECEITAS -->
+<div id="sec-receitas" class="sec">
+<div class="wrap">
+  <div id="lista-receitas"></div>
+</div>
+</div>
+
+<script>
+let produtos = JSON.parse(localStorage.getItem('padaria_produtos')||'[]');
+let producoes = JSON.parse(localStorage.getItem('padaria_producoes')||'[]');
+let receitas = JSON.parse(localStorage.getItem('padaria_receitas')||'{}');
+let editandoProduto = null;
+let editandoReceita = null;
+let abertasRec = {};
+
+function save(){
+  localStorage.setItem('padaria_produtos', JSON.stringify(produtos));
+  localStorage.setItem('padaria_producoes', JSON.stringify(producoes));
+  localStorage.setItem('padaria_receitas', JSON.stringify(receitas));
+}
+
+function hoje(){return new Date().toISOString().slice(0,10);}
+function addDias(data,dias){const d=new Date(data+'T00:00:00');d.setDate(d.getDate()+parseInt(dias));return d.toISOString().slice(0,10);}
+function diasRestantes(val){const h=new Date(hoje()+'T00:00:00');const v=new Date(val+'T00:00:00');return Math.round((v-h)/(1000*60*60*24));}
+function fmt(d){if(!d)return'';const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}
+
+function showTab(t){
+  ['producao','produtos','receitas'].forEach(s=>{
+    document.getElementById('sec-'+s).classList.toggle('show',s===t);
+  });
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['producao','produtos','receitas'][i]===t));
+  if(t==='receitas') renderReceitas();
+  if(t==='produtos'){editandoProduto=null;renderProdutos();}
+}
+
+function preencherValidade(){
+  const pid=document.getElementById('sel-produto').value;
+  const inicio=document.getElementById('inicio').value;
+  const p=produtos.find(x=>x.id==pid);
+  document.getElementById('val-calc').value=(p&&inicio)?fmt(addDias(inicio,p.dias)):'';
+}
+
+function addProduto(){
+  const nome=document.getElementById('p-nome').value.trim();
+  const dias=parseInt(document.getElementById('p-dias').value);
+  if(!nome||!dias||dias<1){alert('Preencha nome e validade em dias.');return;}
+  produtos.push({id:Date.now(),nome,dias});
+  save();renderProdutos();renderSelect();
+  document.getElementById('p-nome').value='';
+  document.getElementById('p-dias').value='';
+}
+
+function editarProduto(id){editandoProduto=id;renderProdutos();}
+function cancelarEdicao(){editandoProduto=null;renderProdutos();}
+
+function salvarEdicao(id){
+  const nome=document.getElementById('edit-nome-'+id).value.trim();
+  const dias=parseInt(document.getElementById('edit-dias-'+id).value);
+  if(!nome||!dias||dias<1){alert('Preencha nome e validade.');return;}
+  const p=produtos.find(x=>x.id===id);
+  if(p){p.nome=nome;p.dias=dias;}
+  editandoProduto=null;
+  save();renderProdutos();renderSelect();
+}
+
+function delProduto(id){
+  if(!confirm('Remover este produto?')) return;
+  produtos=produtos.filter(x=>x.id!==id);
+  editandoProduto=null;
+  save();renderProdutos();renderSelect();
+}
+
+function addProducao(){
+  const pid=document.getElementById('sel-produto').value;
+  const inicio=document.getElementById('inicio').value;
+  const qtd=document.getElementById('qtd').value;
+  const p=produtos.find(x=>x.id==pid);
+  if(!p||!inicio){alert('Selecione o produto e a data de início.');return;}
+  producoes.unshift({id:Date.now(),pid,nome:p.nome,inicio,validade:addDias(inicio,p.dias),qtd:qtd||''});
+  save();renderProducoes();
+  document.getElementById('sel-produto').value='';
+  document.getElementById('inicio').value='';
+  document.getElementById('qtd').value='';
+  document.getElementById('val-calc').value='';
+}
+
+function delProducao(id){
+  if(!confirm('Remover esta produção?')) return;
+  producoes=producoes.filter(x=>x.id!==id);
+  save();renderProducoes();
+}
+
+function toggleRec(id){abertasRec[id]=!abertasRec[id];renderReceitas();}
+function editarReceita(id){editandoReceita=id;abertasRec[id]=true;renderReceitas();}
+function cancelarReceita(){editandoReceita=null;renderReceitas();}
+
+function addIngRow(id){
+  const cont=document.getElementById('ing-edit-'+id);
+  const row=document.createElement('div');
+  row.className='ing-row';
+  row.innerHTML=`<input type="text" placeholder="Ingrediente" style="flex:2"/><input type="text" placeholder="Quantidade" style="flex:1"/><button class="btn-icon" onclick="this.parentElement.remove()" style="color:#E24B4A">✕</button>`;
+  cont.appendChild(row);
+}
+
+function salvarReceita(id){
+  const rows=document.querySelectorAll('#ing-edit-'+id+' .ing-row');
+  const ings=[];
+  rows.forEach(r=>{
+    const inputs=r.querySelectorAll('input');
+    const nome=inputs[0].value.trim();
+    const qtd=inputs[1].value.trim();
+    if(nome) ings.push({nome,qtd});
+  });
+  const preparo=document.getElementById('preparo-edit-'+id).value.trim();
+  receitas[id]={ingredientes:ings,preparo};
+  editandoReceita=null;
+  save();renderReceitas();
+}
+
+function renderSelect(){
+  const sel=document.getElementById('sel-produto');
+  sel.innerHTML='<option value="">Selecione...</option>'+produtos.map(p=>`<option value="${p.id}">${p.nome} (${p.dias} dias)</option>`).join('');
+}
+
+function renderProdutos(){
+  const el=document.getElementById('lista-produtos');
+  if(!produtos.length){el.innerHTML='<div class="empty">Nenhum produto cadastrado ainda.</div>';return;}
+  el.innerHTML=produtos.map(p=>{
+    if(editandoProduto===p.id){
+      return `<div class="pitem" style="flex-wrap:wrap;gap:6px">
+        <input type="text" id="edit-nome-${p.id}" value="${p.nome}" style="flex:2;min-width:120px" maxlength="60"/>
+        <input type="number" id="edit-dias-${p.id}" value="${p.dias}" min="1" max="365" style="width:70px"/>
+        <span style="font-size:12px;color:#aaa">dias</span>
+        <div class="btn-actions">
+          <button class="btn-icon" onclick="salvarEdicao(${p.id})" style="color:#1D9E75">✓</button>
+          <button class="btn-icon" onclick="cancelarEdicao()">✕</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="pitem">
+      <span class="pitem-name">${p.nome}</span>
+      <span class="pitem-val">${p.dias} dias</span>
+      <div class="btn-actions">
+        <button class="btn-icon" onclick="editarProduto(${p.id})" aria-label="Editar">✏️</button>
+        <button class="btn-icon" onclick="delProduto(${p.id})" aria-label="Remover">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderReceitas(){
+  const el=document.getElementById('lista-receitas');
+  if(!produtos.length){el.innerHTML='<div class="empty">Cadastre produtos primeiro na aba Produtos.</div>';return;}
+  el.innerHTML=produtos.map(p=>{
+    const rec=receitas[p.id]||{ingredientes:[],preparo:''};
+    const aberta=abertasRec[p.id];
+    const editando=editandoReceita===p.id;
+    const temRec=rec.ingredientes.length>0||rec.preparo;
+    let body='';
+    if(editando){
+      const ingsHtml=rec.ingredientes.map(i=>`<div class="ing-row"><input type="text" placeholder="Ingrediente" value="${i.nome}" style="flex:2"/><input type="text" placeholder="Quantidade" value="${i.qtd}" style="flex:1"/><button class="btn-icon" onclick="this.parentElement.remove()" style="color:#E24B4A">✕</button></div>`).join('');
+      body=`<div class="rec-body open">
+        <div class="sec-label">Ingredientes</div>
+        <div id="ing-edit-${p.id}" class="ing-list">${ingsHtml}</div>
+        <button class="btn-sm" onclick="addIngRow(${p.id})" style="margin-bottom:12px">+ Ingrediente</button>
+        <div class="sec-label" style="margin-top:4px">Modo de preparo</div>
+        <textarea id="preparo-edit-${p.id}" rows="6" placeholder="Descreva o passo a passo...">${rec.preparo||''}</textarea>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-primary" onclick="salvarReceita(${p.id})" style="margin-top:0">✓ Salvar</button>
+          <button class="btn" onclick="cancelarReceita()" style="margin-top:0">Cancelar</button>
+        </div>
+      </div>`;
+    } else if(aberta){
+      const ingsHtml=rec.ingredientes.length
+        ? rec.ingredientes.map(i=>`<span class="ing-badge">● ${i.nome}${i.qtd?' — '+i.qtd:''}</span>`).join('')
+        : '<span class="sem-receita">Nenhum ingrediente cadastrado.</span>';
+      const preparoHtml=rec.preparo
+        ? `<p class="preparo-text">${rec.preparo}</p>`
+        : '<span class="sem-receita">Modo de preparo não cadastrado.</span>';
+      body=`<div class="rec-body open">
+        <div class="sec-label">Ingredientes</div>
+        <div style="margin-bottom:12px">${ingsHtml}</div>
+        <div class="sec-label">Modo de preparo</div>
+        ${preparoHtml}
+      </div>`;
+    }
+    return `<div class="rec-card">
+      <div class="rec-header" onclick="toggleRec(${p.id})">
+        <span style="font-size:12px;color:#aaa">${aberta?'▼':'▶'}</span>
+        <span class="rec-header-name">${p.nome}</span>
+        ${temRec?'<span class="badge rec">Com receita</span>':'<span style="font-size:11px;color:#aaa">Sem receita</span>'}
+        <button class="btn-icon" onclick="event.stopPropagation();editarReceita(${p.id})" aria-label="Editar receita">✏️</button>
+      </div>
+      ${body}
+    </div>`;
+  }).join('');
+}
+
+function renderProducoes(){
+  const alertasEl=document.getElementById('alertas');
+  const lista=document.getElementById('lista');
+  const warns=producoes.filter(x=>diasRestantes(x.validade)<=1);
+  alertasEl.innerHTML=warns.map(x=>{
+    const d=diasRestantes(x.validade);
+    let txt,cls;
+    if(d<0){txt=`<strong>${x.nome}</strong> venceu há ${Math.abs(d)} dia(s)!`;cls='vencido';}
+    else if(d===0){txt=`<strong>${x.nome}</strong> vence hoje!`;cls='urgente';}
+    else{txt=`<strong>${x.nome}</strong> vence amanhã (${fmt(x.validade)})`;cls='urgente';}
+    return `<div class="alerta ${cls}">⚠️ <span>${txt}</span></div>`;
+  }).join('');
+  if(!producoes.length){lista.innerHTML='<div class="empty">Nenhuma produção registrada.</div>';return;}
+  const sorted=[...producoes].sort((a,b)=>a.validade.localeCompare(b.validade));
+  lista.innerHTML=sorted.map(x=>{
+    const d=diasRestantes(x.validade);
+    let dotCls,badgeCls,labelDias;
+    if(d<0){dotCls='bad';badgeCls='bad';labelDias='Vencido';}
+    else if(d<=1){dotCls='warn';badgeCls='warn';labelDias=d===0?'Vence hoje':'Vence amanhã';}
+    else{dotCls='ok';badgeCls='ok';labelDias=d+' dias';}
+    return `<div class="item">
+      <div class="dot ${dotCls}"></div>
+      <div class="item-body">
+        <div class="item-name">${x.nome}${x.qtd?` <span style="font-size:12px;color:#aaa;font-weight:400">(${x.qtd} un.)</span>`:''}<span class="badge ${badgeCls}">${labelDias}</span></div>
+        <div class="item-meta">Início: ${fmt(x.inicio)} · Vence: ${fmt(x.validade)}</div>
+      </div>
+      <button class="btn-icon" onclick="delProducao(${x.id})" style="color:#E24B4A" aria-label="Remover">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+renderSelect();renderProdutos();renderProducoes();
+</script>
+</body>
+</html>
