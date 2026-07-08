@@ -8,8 +8,8 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#f4f4f2;color:#1a1a18;min-height:100vh}
-h1{font-size:18px;font-weight:500;padding:1rem;display:flex;align-items:center;gap:8px;background:#fff;border-bottom:1px solid #e0e0da}
-.tabs{display:flex;background:#fff;border-bottom:1px solid #e0e0da;position:sticky;top:0;z-index:10}
+h1{font-size:18px;font-weight:500;padding:1rem;display:flex;align-items:center;gap:8px;background:#fff;border-bottom:1px solid #e0e0da;position:sticky;top:0;z-index:20}
+.tabs{display:flex;background:#fff;border-bottom:1px solid #e0e0da;position:sticky;top:53px;z-index:10}
 .tab{flex:1;height:44px;border:none;background:transparent;color:#888;font-size:13px;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent}
 .tab.active{color:#1D9E75;border-bottom:2px solid #1D9E75;font-weight:500}
 .wrap{padding:1rem;max-width:600px;margin:0 auto}
@@ -23,13 +23,19 @@ textarea{height:auto;padding:10px 12px;resize:vertical;line-height:1.5}
 input[readonly]{background:#f4f4f2;color:#aaa}
 .btn{height:44px;padding:0 16px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#1a1a18;font-size:14px;cursor:pointer;width:100%;margin-top:8px;font-family:inherit}
 .btn:active{background:#f4f4f2}
-.btn-sm{height:36px;padding:0 12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#1a1a18;font-size:13px;cursor:pointer;font-family:inherit}
 .btn-primary{background:#1D9E75;color:#fff;border-color:#1D9E75}
 .btn-primary:active{background:#0F6E56}
-.alertas{margin-bottom:1rem}
+.btn-sm{height:36px;padding:0 12px;border-radius:8px;border:1px solid #ccc;background:#fff;color:#1a1a18;font-size:13px;cursor:pointer;font-family:inherit}
+.alertas{margin-bottom:.75rem}
 .alerta{display:flex;align-items:flex-start;gap:10px;padding:.75rem 1rem;border-radius:12px;margin-bottom:6px;font-size:13px;line-height:1.4}
 .alerta.vencido{background:#FCEBEB;border:1px solid #F7C1C1;color:#791F1F}
 .alerta.urgente{background:#FAEEDA;border:1px solid #FAC775;color:#633806}
+.falta-section{margin-bottom:1rem}
+.falta-header{font-size:12px;font-weight:500;color:#A32D2D;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.falta-grid{display:flex;flex-wrap:wrap;gap:6px}
+.falta-badge{display:inline-flex;align-items:center;gap:5px;background:#FCEBEB;border:1px solid #F7C1C1;color:#791F1F;border-radius:20px;padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer}
+.falta-badge:active{background:#F7C1C1}
+.falta-dica{font-size:11px;color:#A32D2D;margin-top:4px;font-style:italic}
 .items{display:flex;flex-direction:column;gap:8px}
 .item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #e0e0da;border-radius:12px;padding:.75rem 1rem}
 .item-body{flex:1;min-width:0}
@@ -56,14 +62,18 @@ input[readonly]{background:#f4f4f2;color:#aaa}
 .ing-row input{height:36px}
 .ing-list{margin-bottom:8px}
 .rec-card{background:#fff;border:1px solid #e0e0da;border-radius:12px;margin-bottom:8px;overflow:hidden}
-.rec-header{display:flex;align-items:center;padding:.85rem 1rem;gap:10px;min-height:52px}
+.rec-header{display:flex;align-items:center;padding:.85rem 1rem;gap:10px;min-height:52px;cursor:pointer}
 .rec-header-name{flex:1;font-weight:500;font-size:14px}
 .rec-body{padding:0 1rem 1rem;display:none}
 .rec-body.open{display:block}
 .ing-badge{display:inline-flex;align-items:center;gap:4px;background:#f4f4f2;border:1px solid #e0e0da;border-radius:20px;padding:4px 10px;font-size:12px;margin:2px}
-.preparo-text{font-size:13px;line-height:1.6;white-space:pre-wrap;color:#1a1a18}
+.preparo-text{font-size:13px;line-height:1.6;white-space:pre-wrap}
 .sem-receita{font-size:12px;color:#aaa;font-style:italic}
 .sec-label{font-size:11px;font-weight:500;color:#aaa;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.divider{font-size:12px;font-weight:500;color:#aaa;margin:1rem 0 .5rem;display:flex;align-items:center;gap:8px}
+.divider::after{content:'';flex:1;height:1px;background:#e0e0da}
+.highlight{animation:pulse .7s ease}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(29,158,117,.5)}70%{box-shadow:0 0 0 10px rgba(29,158,117,0)}100%{box-shadow:0 0 0 0 rgba(29,158,117,0)}}
 </style>
 </head>
 <body>
@@ -80,7 +90,8 @@ input[readonly]{background:#f4f4f2;color:#aaa}
 <div id="sec-producao" class="sec show">
 <div class="wrap">
   <div id="alertas" class="alertas"></div>
-  <div class="card">
+  <div id="falta-section"></div>
+  <div class="card" id="form-card">
     <h2>Registrar produção</h2>
     <div class="grid">
       <div class="full">
@@ -102,6 +113,7 @@ input[readonly]{background:#f4f4f2;color:#aaa}
     </div>
     <button class="btn btn-primary" onclick="addProducao()">+ Adicionar produção</button>
   </div>
+  <div class="divider">Lotes registrados</div>
   <div class="items" id="lista"></div>
 </div>
 </div>
@@ -135,23 +147,35 @@ input[readonly]{background:#f4f4f2;color:#aaa}
 </div>
 
 <script>
-let produtos = JSON.parse(localStorage.getItem('padaria_produtos')||'[]');
-let producoes = JSON.parse(localStorage.getItem('padaria_producoes')||'[]');
-let receitas = JSON.parse(localStorage.getItem('padaria_receitas')||'{}');
+let produtos = JSON.parse(localStorage.getItem('pad_produtos_v4')||'[]');
+let producoes = JSON.parse(localStorage.getItem('pad_producoes_v4')||'[]');
+let receitas = JSON.parse(localStorage.getItem('pad_receitas_v4')||'{}');
 let editandoProduto = null;
 let editandoReceita = null;
 let abertasRec = {};
 
 function save(){
-  localStorage.setItem('padaria_produtos', JSON.stringify(produtos));
-  localStorage.setItem('padaria_producoes', JSON.stringify(producoes));
-  localStorage.setItem('padaria_receitas', JSON.stringify(receitas));
+  localStorage.setItem('pad_produtos_v4', JSON.stringify(produtos));
+  localStorage.setItem('pad_producoes_v4', JSON.stringify(producoes));
+  localStorage.setItem('pad_receitas_v4', JSON.stringify(receitas));
 }
 
 function hoje(){return new Date().toISOString().slice(0,10);}
 function addDias(data,dias){const d=new Date(data+'T00:00:00');d.setDate(d.getDate()+parseInt(dias));return d.toISOString().slice(0,10);}
 function diasRestantes(val){const h=new Date(hoje()+'T00:00:00');const v=new Date(val+'T00:00:00');return Math.round((v-h)/(1000*60*60*24));}
 function fmt(d){if(!d)return'';const[y,m,day]=d.split('-');return day+'/'+m+'/'+y;}
+
+function selecionarProdutoEmFalta(pid){
+  const sel=document.getElementById('sel-produto');
+  sel.value=pid;
+  preencherValidade();
+  const card=document.getElementById('form-card');
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+  card.classList.remove('highlight');
+  void card.offsetWidth;
+  card.classList.add('highlight');
+  document.getElementById('inicio').focus();
+}
 
 function showTab(t){
   ['producao','produtos','receitas'].forEach(s=>{
@@ -193,7 +217,7 @@ function salvarEdicao(id){
 }
 
 function delProduto(id){
-  if(!confirm('Remover este produto?')) return;
+  if(!confirm('Remover este produto?'))return;
   produtos=produtos.filter(x=>x.id!==id);
   editandoProduto=null;
   save();renderProdutos();renderSelect();
@@ -214,7 +238,7 @@ function addProducao(){
 }
 
 function delProducao(id){
-  if(!confirm('Remover esta produção?')) return;
+  if(!confirm('Remover esta produção?'))return;
   producoes=producoes.filter(x=>x.id!==id);
   save();renderProducoes();
 }
@@ -292,7 +316,7 @@ function renderReceitas(){
         <div class="sec-label">Ingredientes</div>
         <div id="ing-edit-${p.id}" class="ing-list">${ingsHtml}</div>
         <button class="btn-sm" onclick="addIngRow(${p.id})" style="margin-bottom:12px">+ Ingrediente</button>
-        <div class="sec-label" style="margin-top:4px">Modo de preparo</div>
+        <div class="sec-label" style="margin-top:8px">Modo de preparo</div>
         <textarea id="preparo-edit-${p.id}" rows="6" placeholder="Descreva o passo a passo...">${rec.preparo||''}</textarea>
         <div style="display:flex;gap:8px;margin-top:10px">
           <button class="btn btn-primary" onclick="salvarReceita(${p.id})" style="margin-top:0">✓ Salvar</button>
@@ -327,7 +351,9 @@ function renderReceitas(){
 
 function renderProducoes(){
   const alertasEl=document.getElementById('alertas');
+  const faltaEl=document.getElementById('falta-section');
   const lista=document.getElementById('lista');
+
   const warns=producoes.filter(x=>diasRestantes(x.validade)<=1);
   alertasEl.innerHTML=warns.map(x=>{
     const d=diasRestantes(x.validade);
@@ -337,6 +363,19 @@ function renderProducoes(){
     else{txt=`<strong>${x.nome}</strong> vence amanhã (${fmt(x.validade)})`;cls='urgente';}
     return `<div class="alerta ${cls}">⚠️ <span>${txt}</span></div>`;
   }).join('');
+
+  const comQualquerLote=new Set(producoes.map(x=>x.pid));
+  const emFalta=produtos.filter(p=>!comQualquerLote.has(p.id));
+  if(emFalta.length){
+    faltaEl.innerHTML=`<div class="falta-section">
+      <div class="falta-header">⛔ Em falta (${emFalta.length})</div>
+      <div class="falta-grid">${emFalta.map(p=>`<span class="falta-badge" onclick="selecionarProdutoEmFalta(${p.id})">+ ${p.nome}</span>`).join('')}</div>
+      <div class="falta-dica">Toque em um produto para registrar a produção</div>
+    </div>`;
+  } else {
+    faltaEl.innerHTML='';
+  }
+
   if(!producoes.length){lista.innerHTML='<div class="empty">Nenhuma produção registrada.</div>';return;}
   const sorted=[...producoes].sort((a,b)=>a.validade.localeCompare(b.validade));
   lista.innerHTML=sorted.map(x=>{
