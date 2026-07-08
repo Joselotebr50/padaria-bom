@@ -86,7 +86,6 @@ input[readonly]{background:#f4f4f2;color:#aaa}
   <button class="tab" onclick="showTab('receitas')">Receitas</button>
 </div>
 
-<!-- PRODUÇÃO -->
 <div id="sec-producao" class="sec show">
 <div class="wrap">
   <div id="alertas" class="alertas"></div>
@@ -118,7 +117,6 @@ input[readonly]{background:#f4f4f2;color:#aaa}
 </div>
 </div>
 
-<!-- PRODUTOS -->
 <div id="sec-produtos" class="sec">
 <div class="wrap">
   <div class="card">
@@ -139,7 +137,6 @@ input[readonly]{background:#f4f4f2;color:#aaa}
 </div>
 </div>
 
-<!-- RECEITAS -->
 <div id="sec-receitas" class="sec">
 <div class="wrap">
   <div id="lista-receitas"></div>
@@ -364,8 +361,11 @@ function renderProducoes(){
     return `<div class="alerta ${cls}">⚠️ <span>${txt}</span></div>`;
   }).join('');
 
-  const comQualquerLote=new Set(producoes.map(x=>x.pid));
-  const emFalta=produtos.filter(p=>!comQualquerLote.has(p.id));
+  // Em falta = sem nenhum lote ATIVO (não vencido)
+  const comLoteAtivo=new Set(
+    producoes.filter(x=>diasRestantes(x.validade)>=0).map(x=>x.pid)
+  );
+  const emFalta=produtos.filter(p=>!comLoteAtivo.has(p.id));
   if(emFalta.length){
     faltaEl.innerHTML=`<div class="falta-section">
       <div class="falta-header">⛔ Em falta (${emFalta.length})</div>
