@@ -305,6 +305,76 @@
     border-radius: 5px;
     letter-spacing: 0.2px;
   }
+  .badge-arquivado{
+    font-size: 10.5px;
+    font-weight: 700;
+    background: var(--surface-2);
+    color: var(--crosta-soft);
+    padding: 2px 6px;
+    border-radius: 5px;
+    letter-spacing: 0.2px;
+  }
+  .subsecao-titulo{
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--crosta-soft);
+    margin: 4px 0 6px;
+  }
+  .produto-item.arquivado{ opacity: 0.7; }
+
+  .toggle-status{
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--linha);
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  .toggle-opcao{
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--crosta-soft);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 9px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .toggle-opcao.active{
+    background: var(--dourado);
+    color: #fff;
+  }
+  fieldset.campo-status{
+    border: none;
+    padding: 0;
+    margin: 12px 0 0;
+  }
+  fieldset.campo-status .opcoes-status{
+    display: flex;
+    gap: 10px;
+  }
+  fieldset.campo-status label.opcao{
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-transform: none;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--crosta);
+    background: var(--bg);
+    border: 1px solid var(--linha);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+  }
+  fieldset.campo-status input[type="radio"]{ accent-color: var(--dourado); width:16px; height:16px; }
   .produto-acoes{ display:flex; gap:2px; flex-shrink:0; }
   .icon-btn{
     background:none; border:none; cursor:pointer;
@@ -446,13 +516,29 @@
         <label for="input-validade-dias">Validade padrão (dias)</label>
         <input type="number" id="input-validade-dias" min="0" placeholder="Ex: 3" required>
 
+        <fieldset class="campo-status">
+          <label>Cadastrar como</label>
+          <div class="opcoes-status">
+            <label class="opcao">
+              <input type="radio" name="status-produto" value="ativo" checked> Ativo
+            </label>
+            <label class="opcao">
+              <input type="radio" name="status-produto" value="arquivado"> Arquivado
+            </label>
+          </div>
+        </fieldset>
+
         <button type="submit" class="btn btn-primario">Cadastrar produto</button>
       </form>
     </div>
 
     <div class="card">
-      <h2 class="section-title" style="margin-top:0;">Produtos cadastrados</h2>
-      <div id="lista-produtos"></div>
+      <div class="toggle-status">
+        <button type="button" class="toggle-opcao active" data-filtro="ativo">Ativos</button>
+        <button type="button" class="toggle-opcao" data-filtro="arquivado">Arquivados</button>
+      </div>
+      <h2 class="section-title" id="titulo-lista-produtos">Produtos ativos</h2>
+      <div id="lista-produtos-filtrada"></div>
     </div>
   </section>
 
@@ -599,17 +685,22 @@
   const previewValidade = document.getElementById("preview-validade");
   const formLote = document.getElementById("form-lote");
 
+  function ehAtivo(p){
+    return p.status !== "arquivado";
+  }
+
   function popularSelectProdutos(){
     const valorAtual = selProduto.value;
     selProduto.innerHTML = "";
-    if(produtos.length === 0){
+    const produtosAtivos = produtos.filter(ehAtivo);
+    if(produtosAtivos.length === 0){
       const op = document.createElement("option");
-      op.textContent = "Cadastre um produto primeiro";
+      op.textContent = "Cadastre um produto ativo primeiro";
       op.value = "";
       selProduto.appendChild(op);
       return;
     }
-    produtos.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
+    produtosAtivos.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
       const op = document.createElement("option");
       op.value = p.id;
       op.textContent = p.nome;
@@ -648,7 +739,7 @@
     const board = document.getElementById("em-falta-board");
     const vazio = document.getElementById("em-falta-empty");
     const idsComLote = new Set(lotes.map(l => l.produtoId));
-    const semLote = produtos.filter(p => !idsComLote.has(p.id));
+    const semLote = produtos.filter(p => ehAtivo(p) && !idsComLote.has(p.id));
 
     board.innerHTML = "";
     if(semLote.length === 0){
@@ -718,8 +809,9 @@
     const codigo = inputCodigoProduto.value.trim();
     const nome = inputNomeProduto.value.trim();
     const dias = Number(inputValidadeDias.value);
+    const statusEscolhido = formProduto.querySelector('input[name="status-produto"]:checked').value;
     if(!nome || isNaN(dias) || dias < 0) return;
-    produtos.push({ id: novoId(), codigo, nome, validadeDias: dias });
+    produtos.push({ id: novoId(), codigo, nome, validadeDias: dias, status: statusEscolhido });
     salvar(CHAVE.produtos, produtos);
     formProduto.reset();
     renderizarTudoProdutos();
@@ -732,31 +824,65 @@
     return !!(r && ((r.ingredientes && r.ingredientes.length > 0) || (r.modoPreparo && r.modoPreparo.trim() !== "")));
   }
 
+  function criarItemProduto(p, arquivado){
+    const item = document.createElement("div");
+    item.className = "produto-item" + (arquivado ? " arquivado" : "");
+    item.innerHTML = `
+      <div class="produto-info">
+        <div class="nome">${escapeHtml(p.nome)} ${temReceita(p.id) ? '<span class="badge-receita">Com receita</span>' : ''} ${arquivado ? '<span class="badge-arquivado">Arquivado</span>' : ''}</div>
+        ${p.codigo ? `<span class="codigo">${escapeHtml(p.codigo)}</span>` : ''}
+        <div class="validade">Validade padrão: ${p.validadeDias} dia(s)</div>
+      </div>
+      <div class="produto-acoes">
+        ${arquivado
+          ? '<button class="icon-btn" data-acao="desarquivar" aria-label="Desarquivar produto" title="Desarquivar">↩</button>'
+          : '<button class="icon-btn" data-acao="arquivar" aria-label="Arquivar produto" title="Arquivar">🗄</button>'
+        }
+        <button class="icon-btn" data-acao="editar" aria-label="Editar produto">✎</button>
+        <button class="icon-btn" data-acao="remover" aria-label="Remover produto">🗑</button>
+      </div>
+    `;
+    item.querySelector('[data-acao="editar"]').addEventListener("click", () => editarProduto(p.id));
+    item.querySelector('[data-acao="remover"]').addEventListener("click", () => removerProduto(p.id));
+    if(arquivado){
+      item.querySelector('[data-acao="desarquivar"]').addEventListener("click", () => desarquivarProduto(p.id));
+    }else{
+      item.querySelector('[data-acao="arquivar"]').addEventListener("click", () => arquivarProduto(p.id));
+    }
+    return item;
+  }
+
+  let filtroProdutosAtual = "ativo";
+  const botoesToggleStatus = document.querySelectorAll(".toggle-opcao");
+  const tituloListaProdutos = document.getElementById("titulo-lista-produtos");
+  botoesToggleStatus.forEach(btn => {
+    btn.addEventListener("click", () => {
+      filtroProdutosAtual = btn.dataset.filtro;
+      botoesToggleStatus.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderizarListaProdutos();
+    });
+  });
+
   function renderizarListaProdutos(){
-    const lista = document.getElementById("lista-produtos");
+    const lista = document.getElementById("lista-produtos-filtrada");
+    const mostrarArquivados = filtroProdutosAtual === "arquivado";
+
+    tituloListaProdutos.textContent = mostrarArquivados ? "Produtos arquivados" : "Produtos ativos";
+
+    const filtrados = produtos
+      .filter(p => mostrarArquivados ? !ehAtivo(p) : ehAtivo(p))
+      .slice()
+      .sort((a,b)=>a.nome.localeCompare(b.nome));
+
     lista.innerHTML = "";
-    if(produtos.length === 0){
-      lista.innerHTML = '<div class="lista-vazia">Nenhum produto cadastrado ainda.</div>';
+    if(filtrados.length === 0){
+      lista.innerHTML = mostrarArquivados
+        ? '<div class="lista-vazia">Nenhum produto arquivado.</div>'
+        : '<div class="lista-vazia">Nenhum produto ativo ainda.</div>';
       return;
     }
-    produtos.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
-      const item = document.createElement("div");
-      item.className = "produto-item";
-      item.innerHTML = `
-        <div class="produto-info">
-          <div class="nome">${escapeHtml(p.nome)} ${temReceita(p.id) ? '<span class="badge-receita">Com receita</span>' : ''}</div>
-          ${p.codigo ? `<span class="codigo">${escapeHtml(p.codigo)}</span>` : ''}
-          <div class="validade">Validade padrão: ${p.validadeDias} dia(s)</div>
-        </div>
-        <div class="produto-acoes">
-          <button class="icon-btn" data-acao="editar" aria-label="Editar produto">✎</button>
-          <button class="icon-btn" data-acao="remover" aria-label="Remover produto">🗑</button>
-        </div>
-      `;
-      item.querySelector('[data-acao="editar"]').addEventListener("click", () => editarProduto(p.id));
-      item.querySelector('[data-acao="remover"]').addEventListener("click", () => removerProduto(p.id));
-      lista.appendChild(item);
-    });
+    filtrados.forEach(p => lista.appendChild(criarItemProduto(p, mostrarArquivados)));
   }
 
   function editarProduto(id){
@@ -773,6 +899,30 @@
     p.codigo = novoCodigo.trim();
     p.nome = novoNome.trim();
     p.validadeDias = diasNum;
+    salvar(CHAVE.produtos, produtos);
+    renderizarTudoProdutos();
+    renderizarTudoProducao();
+    renderizarTudoReceitas();
+  }
+
+  function arquivarProduto(id){
+    const p = produtos.find(x => x.id === id);
+    if(!p) return;
+    const ok = confirm(`Arquivar "${p.nome}"? Os lotes ativos dele serão removidos (a receita continua salva). Ele deixa de aparecer em "Em falta" e no formulário de produção.`);
+    if(!ok) return;
+    p.status = "arquivado";
+    lotes = lotes.filter(l => l.produtoId !== id);
+    salvar(CHAVE.produtos, produtos);
+    salvar(CHAVE.lotes, lotes);
+    renderizarTudoProdutos();
+    renderizarTudoProducao();
+    renderizarTudoReceitas();
+  }
+
+  function desarquivarProduto(id){
+    const p = produtos.find(x => x.id === id);
+    if(!p) return;
+    p.status = "ativo";
     salvar(CHAVE.produtos, produtos);
     renderizarTudoProdutos();
     renderizarTudoProducao();
