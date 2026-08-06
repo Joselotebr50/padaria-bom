@@ -1,4 +1,4 @@
-const CACHE_NAME = "fornada-cache-v2";
+const CACHE_NAME = "fornada-cache-v4";
 const ARQUIVOS_PARA_CACHE = [
   "./index.html",
   "./manifest.json",
@@ -6,7 +6,11 @@ const ARQUIVOS_PARA_CACHE = [
   "./icon-512.png",
   "./icon-512-maskable.png",
   "./apple-touch-icon.png",
-  "./header-bg.jpg"
+  "./header-bg.jpg",
+  "./banner-producao.jpg",
+  "./banner-produtos.jpg",
+  "./banner-receitas.jpg",
+  "./banner-backup.jpg"
 ];
 
 self.addEventListener("install", (event) => {
