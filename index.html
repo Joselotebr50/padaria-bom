@@ -49,9 +49,11 @@
   }
 
   header.app-header{
-    background: var(--crosta);
+    background:
+      linear-gradient(180deg, rgba(30,19,12,0.55) 0%, rgba(30,19,12,0.80) 65%, rgba(30,19,12,0.94) 100%),
+      url('header-bg.jpg') center 62% / cover no-repeat;
     color: var(--bg);
-    padding: 22px 20px 26px;
+    padding: 26px 20px 34px;
     position: relative;
     overflow: hidden;
   }
@@ -75,12 +77,14 @@
     font-size: 26px;
     letter-spacing: 0.3px;
     font-weight: 700;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.5);
   }
   .brand p{
     margin: 2px 0 0;
     font-size: 13px;
-    color: #D8C6AE;
+    color: #F0E4D3;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
   }
   #hoje-label{
     position: relative;
@@ -88,6 +92,33 @@
     margin-top: 14px;
     font-size: 13px;
     color: #C9B79C;
+  }
+
+  .idioma-switch{
+    position: absolute;
+    top: 14px; right: 16px;
+    z-index: 2;
+    display: flex;
+    gap: 3px;
+    background: rgba(255,255,255,0.08);
+    padding: 3px;
+    border-radius: 8px;
+  }
+  .idioma-opcao{
+    background: none;
+    border: none;
+    color: #D8C6AE;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    padding: 5px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .idioma-opcao.active{
+    background: var(--dourado);
+    color: #fff;
   }
 
   main{
@@ -455,6 +486,11 @@
 <body>
 
 <header class="app-header">
+  <div class="idioma-switch" role="group" aria-label="Idioma / Language / Idioma">
+    <button type="button" class="idioma-opcao" data-lang="pt">PT</button>
+    <button type="button" class="idioma-opcao" data-lang="en">EN</button>
+    <button type="button" class="idioma-opcao" data-lang="es">ES</button>
+  </div>
   <div class="brand">
     <svg width="38" height="38" viewBox="0 0 48 48" fill="none">
       <ellipse cx="24" cy="30" rx="18" ry="11" fill="#C9963E"/>
@@ -464,7 +500,7 @@
     </svg>
     <div>
       <h1 class="display">Fornada</h1>
-      <p>Controle de produção da padaria</p>
+      <p data-i18n="subtitulo">Controle de produção da padaria</p>
     </div>
   </div>
   <div id="hoje-label"></div>
@@ -476,28 +512,28 @@
   <section class="tab-panel active" id="tab-producao">
 
     <div id="em-falta-wrap">
-      <h2 class="section-title">Em falta</h2>
+      <h2 class="section-title" data-i18n="emFalta">Em falta</h2>
       <div id="em-falta-board"></div>
-      <div id="em-falta-empty" style="display:none;">Nenhum produto em falta agora. Tudo com estoque ativo.</div>
+      <div id="em-falta-empty" style="display:none;" data-i18n="emFaltaVazio">Nenhum produto em falta agora. Tudo com estoque ativo.</div>
     </div>
 
     <div class="card">
-      <h2 class="section-title" style="margin-top:0;">Registrar lote</h2>
+      <h2 class="section-title" style="margin-top:0;" data-i18n="registrarLote">Registrar lote</h2>
       <form id="form-lote">
-        <label for="sel-produto">Produto</label>
+        <label for="sel-produto" data-i18n="produtoLabel">Produto</label>
         <select id="sel-produto" required></select>
 
-        <label for="input-data-inicio">Início da venda</label>
+        <label for="input-data-inicio" data-i18n="inicioVenda">Início da venda</label>
         <input type="date" id="input-data-inicio" required>
 
         <div class="campo-hint" id="preview-validade"></div>
 
-        <button type="submit" class="btn btn-primario">Registrar lote</button>
+        <button type="submit" class="btn btn-primario" data-i18n="registrarLote">Registrar lote</button>
       </form>
     </div>
 
     <div class="card">
-      <h2 class="section-title" style="margin-top:0;">Lotes ativos</h2>
+      <h2 class="section-title" style="margin-top:0;" data-i18n="lotesAtivos">Lotes ativos</h2>
       <div id="lista-lotes"></div>
     </div>
   </section>
@@ -505,39 +541,39 @@
   <!-- ================= PRODUTOS ================= -->
   <section class="tab-panel" id="tab-produtos">
     <div class="card">
-      <h2 class="section-title" style="margin-top:0;">Novo produto</h2>
+      <h2 class="section-title" style="margin-top:0;" data-i18n="novoProduto">Novo produto</h2>
       <form id="form-produto">
-        <label for="input-codigo-produto">Código do produto</label>
-        <input type="text" id="input-codigo-produto" placeholder="Ex: 1042">
+        <label for="input-codigo-produto" data-i18n="codigoProduto">Código do produto</label>
+        <input type="text" id="input-codigo-produto" placeholder="Ex: 1042" data-i18n-placeholder="codigoPlaceholder">
 
-        <label for="input-nome-produto">Nome do produto</label>
-        <input type="text" id="input-nome-produto" placeholder="Ex: Pão de queijo" required>
+        <label for="input-nome-produto" data-i18n="nomeProduto">Nome do produto</label>
+        <input type="text" id="input-nome-produto" placeholder="Ex: Pão de queijo" data-i18n-placeholder="nomePlaceholder" required>
 
-        <label for="input-validade-dias">Validade padrão (dias)</label>
-        <input type="number" id="input-validade-dias" min="0" placeholder="Ex: 3" required>
+        <label for="input-validade-dias" data-i18n="validadePadraoDias">Validade padrão (dias)</label>
+        <input type="number" id="input-validade-dias" min="0" placeholder="Ex: 3" data-i18n-placeholder="validadePlaceholder" required>
 
         <fieldset class="campo-status">
-          <label>Cadastrar como</label>
+          <label data-i18n="cadastrarComo">Cadastrar como</label>
           <div class="opcoes-status">
             <label class="opcao">
-              <input type="radio" name="status-produto" value="ativo" checked> Ativo
+              <input type="radio" name="status-produto" value="ativo" checked> <span data-i18n="opcaoAtivo">Ativo</span>
             </label>
             <label class="opcao">
-              <input type="radio" name="status-produto" value="arquivado"> Arquivado
+              <input type="radio" name="status-produto" value="arquivado"> <span data-i18n="opcaoArquivado">Arquivado</span>
             </label>
           </div>
         </fieldset>
 
-        <button type="submit" class="btn btn-primario">Cadastrar produto</button>
+        <button type="submit" class="btn btn-primario" data-i18n="btnCadastrarProduto">Cadastrar produto</button>
       </form>
     </div>
 
     <div class="card">
       <div class="toggle-status">
-        <button type="button" class="toggle-opcao active" data-filtro="ativo">Ativos</button>
-        <button type="button" class="toggle-opcao" data-filtro="arquivado">Arquivados</button>
+        <button type="button" class="toggle-opcao active" data-filtro="ativo" data-i18n="toggleAtivos">Ativos</button>
+        <button type="button" class="toggle-opcao" data-filtro="arquivado" data-i18n="toggleArquivados">Arquivados</button>
       </div>
-      <h2 class="section-title" id="titulo-lista-produtos">Produtos ativos</h2>
+      <h2 class="section-title" id="titulo-lista-produtos" data-i18n="tituloProdutosAtivos">Produtos ativos</h2>
       <div id="lista-produtos-filtrada"></div>
     </div>
   </section>
@@ -545,7 +581,7 @@
   <!-- ================= RECEITAS ================= -->
   <section class="tab-panel" id="tab-receitas">
     <div class="card">
-      <h2 class="section-title" style="margin-top:0;">Receitas</h2>
+      <h2 class="section-title" style="margin-top:0;" data-i18n="tabReceitas">Receitas</h2>
       <div id="lista-receitas"></div>
     </div>
   </section>
@@ -553,18 +589,18 @@
   <!-- ================= BACKUP ================= -->
   <section class="tab-panel" id="tab-backup">
     <div class="card">
-      <h2 class="section-title" style="margin-top:0;">Exportar backup</h2>
-      <p class="texto-explicativo">Gera um arquivo <strong>.json</strong> com todos os produtos, lotes e receitas cadastrados. Guarde esse arquivo (Google Drive, e-mail, WhatsApp pra você mesmo) ou use pra levar os dados pra outro celular.</p>
-      <button type="button" id="btn-exportar" class="btn btn-primario">⬇ Baixar arquivo de backup</button>
+      <h2 class="section-title" style="margin-top:0;" data-i18n="exportarTitulo">Exportar backup</h2>
+      <p class="texto-explicativo" data-i18n-html="exportarTextoHtml">Gera um arquivo <strong>.json</strong> com todos os produtos, lotes e receitas cadastrados. Guarde esse arquivo (Google Drive, e-mail, WhatsApp pra você mesmo) ou use pra levar os dados pra outro celular.</p>
+      <button type="button" id="btn-exportar" class="btn btn-primario" data-i18n="exportarBotao">⬇ Baixar arquivo de backup</button>
       <div class="campo-hint" id="status-exportar"></div>
     </div>
 
     <div class="card">
-      <h2 class="section-title" style="margin-top:0;">Importar backup</h2>
-      <p class="texto-explicativo">Escolha um arquivo <strong>.json</strong> exportado anteriormente. <strong>Atenção:</strong> isso substitui tudo que está cadastrado neste aparelho agora.</p>
-      <label for="input-importar">Arquivo de backup</label>
+      <h2 class="section-title" style="margin-top:0;" data-i18n="importarTitulo">Importar backup</h2>
+      <p class="texto-explicativo" data-i18n-html="importarTextoHtml">Escolha um arquivo <strong>.json</strong> exportado anteriormente. <strong>Atenção:</strong> isso substitui tudo que está cadastrado neste aparelho agora.</p>
+      <label for="input-importar" data-i18n="importarLabel">Arquivo de backup</label>
       <input type="file" id="input-importar" accept="application/json,.json">
-      <button type="button" id="btn-importar" class="btn btn-secundario" style="margin-top:12px; width:100%;">Restaurar deste arquivo</button>
+      <button type="button" id="btn-importar" class="btn btn-secundario" style="margin-top:12px; width:100%;" data-i18n="importarBotao">Restaurar deste arquivo</button>
       <div class="campo-hint" id="status-importar"></div>
     </div>
   </section>
@@ -574,19 +610,19 @@
 <nav class="tabbar">
   <button data-tab="tab-producao" class="active">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10a8 8 0 0116 0v10"/><path d="M2 20h20"/></svg>
-    Produção
+    <span data-i18n="tabProducao">Produção</span>
   </button>
   <button data-tab="tab-produtos">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
-    Produtos
+    <span data-i18n="tabProdutos">Produtos</span>
   </button>
   <button data-tab="tab-receitas">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
-    Receitas
+    <span data-i18n="tabReceitas">Receitas</span>
   </button>
   <button data-tab="tab-backup">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
-    Backup
+    <span data-i18n="tabBackup">Backup</span>
   </button>
 </nav>
 
@@ -594,6 +630,185 @@
 <script>
 (function(){
   "use strict";
+
+  // ---------- Idioma ----------
+  const TRADUCOES = {
+    pt: {
+      subtitulo: "Controle de produção da padaria",
+      hoje: "Hoje",
+      tabProducao: "Produção", tabProdutos: "Produtos", tabReceitas: "Receitas", tabBackup: "Backup",
+      emFalta: "Em falta",
+      emFaltaVazio: "Nenhum produto em falta agora. Tudo com estoque ativo.",
+      stamp: "EM FALTA",
+      toqueRegistrar: "toque para registrar",
+      registrarLote: "Registrar lote",
+      produtoLabel: "Produto",
+      inicioVenda: "Início da venda",
+      validadeCalculada: (data,dias) => `Validade calculada: ${data} (${dias} dia(s))`,
+      lotesAtivos: "Lotes ativos",
+      nenhumLote: "Nenhum lote registrado ainda.",
+      inicioAbrev: "Início", validadeAbrev: "Validade",
+      statusOk: "OK", statusAviso: "Vencendo", statusVencido: "Vencido",
+      remover: "Remover",
+      novoProduto: "Novo produto",
+      codigoProduto: "Código do produto", codigoPlaceholder: "Ex: 1042",
+      nomeProduto: "Nome do produto", nomePlaceholder: "Ex: Pão de queijo",
+      validadePadraoDias: "Validade padrão (dias)", validadePlaceholder: "Ex: 3",
+      cadastrarComo: "Cadastrar como", opcaoAtivo: "Ativo", opcaoArquivado: "Arquivado",
+      btnCadastrarProduto: "Cadastrar produto",
+      toggleAtivos: "Ativos", toggleArquivados: "Arquivados",
+      tituloProdutosAtivos: "Produtos ativos", tituloProdutosArquivados: "Produtos arquivados",
+      nenhumProdutoAtivo: "Nenhum produto ativo ainda.", nenhumProdutoArquivado: "Nenhum produto arquivado.",
+      comReceita: "Com receita", arquivadoBadge: "Arquivado",
+      validadePadraoTexto: (dias) => `Validade padrão: ${dias} dia(s)`,
+      acaoDesarquivar: "Desarquivar produto", acaoArquivar: "Arquivar produto",
+      acaoEditar: "Editar produto", acaoRemover: "Remover produto",
+      confirmArquivar: (nome) => `Arquivar "${nome}"? Os lotes ativos dele serão removidos (a receita continua salva). Ele deixa de aparecer em "Em falta" e no formulário de produção.`,
+      confirmRemoverProduto: (nome) => `Remover "${nome}"? Os lotes e a receita associados também serão removidos.`,
+      promptCodigo: "Código do produto:", promptNome: "Nome do produto:", promptValidade: "Validade padrão (dias):",
+      receitasVazio: "Cadastre produtos na aba Produtos para começar a adicionar receitas.",
+      ingredientes: "Ingredientes", addIngrediente: "+ Adicionar ingrediente",
+      modoPreparo: "Modo de preparo", modoPreparoPlaceholder: "Descreva o passo a passo do preparo...",
+      salvoAuto: "As alterações salvam automaticamente.", salvoOk: "Salvo ✓",
+      ingredientePlaceholder: "Ingrediente", qtdPlaceholder: "Quantidade",
+      removerIngredienteAria: "Remover ingrediente",
+      exportarTitulo: "Exportar backup",
+      exportarTextoHtml: 'Gera um arquivo <strong>.json</strong> com todos os produtos, lotes e receitas cadastrados. Guarde esse arquivo (Google Drive, e-mail, WhatsApp pra você mesmo) ou use pra levar os dados pra outro celular.',
+      exportarBotao: "⬇ Baixar arquivo de backup", exportarOk: "Backup baixado ✓",
+      importarTitulo: "Importar backup",
+      importarTextoHtml: 'Escolha um arquivo <strong>.json</strong> exportado anteriormente. <strong>Atenção:</strong> isso substitui tudo que está cadastrado neste aparelho agora.',
+      importarLabel: "Arquivo de backup", importarBotao: "Restaurar deste arquivo",
+      importarEscolha: "Escolha um arquivo primeiro.",
+      importarInvalido: "Arquivo inválido — não é um JSON de backup válido.",
+      importarNaoReconhecido: "Arquivo não reconhecido como backup do Fornada.",
+      importarConfirm: (p,l,r) => `Este arquivo tem ${p} produto(s), ${l} lote(s) e ${r} receita(s).\n\nIsso vai SUBSTITUIR tudo que está cadastrado neste aparelho agora. Deseja continuar?`,
+      importarOk: "Backup restaurado com sucesso ✓",
+      importarErroLeitura: "Não foi possível ler o arquivo.",
+      produtoRemovido: "(produto removido)",
+      cadastrePrimeiro: "Cadastre um produto ativo primeiro"
+    },
+    en: {
+      subtitulo: "Bakery production control",
+      hoje: "Today",
+      tabProducao: "Production", tabProdutos: "Products", tabReceitas: "Recipes", tabBackup: "Backup",
+      emFalta: "Out of stock",
+      emFaltaVazio: "No products out of stock right now. Everything has active stock.",
+      stamp: "OUT OF STOCK",
+      toqueRegistrar: "tap to register",
+      registrarLote: "Register batch",
+      produtoLabel: "Product",
+      inicioVenda: "Sale start date",
+      validadeCalculada: (data,dias) => `Calculated expiry: ${data} (${dias} day(s))`,
+      lotesAtivos: "Active batches",
+      nenhumLote: "No batches registered yet.",
+      inicioAbrev: "Start", validadeAbrev: "Expiry",
+      statusOk: "OK", statusAviso: "Expiring soon", statusVencido: "Expired",
+      remover: "Remove",
+      novoProduto: "New product",
+      codigoProduto: "Product code", codigoPlaceholder: "E.g.: 1042",
+      nomeProduto: "Product name", nomePlaceholder: "E.g.: Cheese bread",
+      validadePadraoDias: "Default shelf life (days)", validadePlaceholder: "E.g.: 3",
+      cadastrarComo: "Register as", opcaoAtivo: "Active", opcaoArquivado: "Archived",
+      btnCadastrarProduto: "Register product",
+      toggleAtivos: "Active", toggleArquivados: "Archived",
+      tituloProdutosAtivos: "Active products", tituloProdutosArquivados: "Archived products",
+      nenhumProdutoAtivo: "No active products yet.", nenhumProdutoArquivado: "No archived products.",
+      comReceita: "Has recipe", arquivadoBadge: "Archived",
+      validadePadraoTexto: (dias) => `Default shelf life: ${dias} day(s)`,
+      acaoDesarquivar: "Unarchive product", acaoArquivar: "Archive product",
+      acaoEditar: "Edit product", acaoRemover: "Remove product",
+      confirmArquivar: (nome) => `Archive "${nome}"? Its active batches will be removed (the recipe stays saved). It will stop appearing in "Out of stock" and in the production form.`,
+      confirmRemoverProduto: (nome) => `Remove "${nome}"? Its batches and recipe will also be removed.`,
+      promptCodigo: "Product code:", promptNome: "Product name:", promptValidade: "Default shelf life (days):",
+      receitasVazio: "Register products in the Products tab to start adding recipes.",
+      ingredientes: "Ingredients", addIngrediente: "+ Add ingredient",
+      modoPreparo: "Preparation method", modoPreparoPlaceholder: "Describe the preparation steps...",
+      salvoAuto: "Changes save automatically.", salvoOk: "Saved ✓",
+      ingredientePlaceholder: "Ingredient", qtdPlaceholder: "Amount",
+      removerIngredienteAria: "Remove ingredient",
+      exportarTitulo: "Export backup",
+      exportarTextoHtml: 'Generates a <strong>.json</strong> file with all registered products, batches and recipes. Keep this file (Google Drive, email, WhatsApp to yourself) or use it to move your data to another phone.',
+      exportarBotao: "⬇ Download backup file", exportarOk: "Backup downloaded ✓",
+      importarTitulo: "Import backup",
+      importarTextoHtml: 'Choose a previously exported <strong>.json</strong> file. <strong>Warning:</strong> this replaces everything currently registered on this device.',
+      importarLabel: "Backup file", importarBotao: "Restore from this file",
+      importarEscolha: "Choose a file first.",
+      importarInvalido: "Invalid file — not a valid backup JSON.",
+      importarNaoReconhecido: "File not recognized as a Fornada backup.",
+      importarConfirm: (p,l,r) => `This file has ${p} product(s), ${l} batch(es) and ${r} recipe(s).\n\nThis will REPLACE everything currently registered on this device. Continue?`,
+      importarOk: "Backup restored successfully ✓",
+      importarErroLeitura: "Could not read the file.",
+      produtoRemovido: "(removed product)",
+      cadastrePrimeiro: "Register an active product first"
+    },
+    es: {
+      subtitulo: "Control de producción de la panadería",
+      hoje: "Hoy",
+      tabProducao: "Producción", tabProdutos: "Productos", tabReceitas: "Recetas", tabBackup: "Copia de seguridad",
+      emFalta: "Sin stock",
+      emFaltaVazio: "Ningún producto sin stock ahora. Todo tiene stock activo.",
+      stamp: "SIN STOCK",
+      toqueRegistrar: "toca para registrar",
+      registrarLote: "Registrar lote",
+      produtoLabel: "Producto",
+      inicioVenda: "Inicio de venta",
+      validadeCalculada: (data,dias) => `Vencimiento calculado: ${data} (${dias} día(s))`,
+      lotesAtivos: "Lotes activos",
+      nenhumLote: "Aún no hay lotes registrados.",
+      inicioAbrev: "Inicio", validadeAbrev: "Vencimiento",
+      statusOk: "OK", statusAviso: "Por vencer", statusVencido: "Vencido",
+      remover: "Eliminar",
+      novoProduto: "Nuevo producto",
+      codigoProduto: "Código del producto", codigoPlaceholder: "Ej: 1042",
+      nomeProduto: "Nombre del producto", nomePlaceholder: "Ej: Pan de queso",
+      validadePadraoDias: "Caducidad predeterminada (días)", validadePlaceholder: "Ej: 3",
+      cadastrarComo: "Registrar como", opcaoAtivo: "Activo", opcaoArquivado: "Archivado",
+      btnCadastrarProduto: "Registrar producto",
+      toggleAtivos: "Activos", toggleArquivados: "Archivados",
+      tituloProdutosAtivos: "Productos activos", tituloProdutosArquivados: "Productos archivados",
+      nenhumProdutoAtivo: "Aún no hay productos activos.", nenhumProdutoArquivado: "Ningún producto archivado.",
+      comReceita: "Con receta", arquivadoBadge: "Archivado",
+      validadePadraoTexto: (dias) => `Caducidad predeterminada: ${dias} día(s)`,
+      acaoDesarquivar: "Desarchivar producto", acaoArquivar: "Archivar producto",
+      acaoEditar: "Editar producto", acaoRemover: "Eliminar producto",
+      confirmArquivar: (nome) => `¿Archivar "${nome}"? Sus lotes activos serán eliminados (la receta se mantiene guardada). Dejará de aparecer en "Sin stock" y en el formulario de producción.`,
+      confirmRemoverProduto: (nome) => `¿Eliminar "${nome}"? Sus lotes y receta asociados también serán eliminados.`,
+      promptCodigo: "Código del producto:", promptNome: "Nombre del producto:", promptValidade: "Caducidad predeterminada (días):",
+      receitasVazio: "Registra productos en la pestaña Productos para empezar a agregar recetas.",
+      ingredientes: "Ingredientes", addIngrediente: "+ Agregar ingrediente",
+      modoPreparo: "Modo de preparación", modoPreparoPlaceholder: "Describe los pasos de la preparación...",
+      salvoAuto: "Los cambios se guardan automáticamente.", salvoOk: "Guardado ✓",
+      ingredientePlaceholder: "Ingrediente", qtdPlaceholder: "Cantidad",
+      removerIngredienteAria: "Eliminar ingrediente",
+      exportarTitulo: "Exportar copia de seguridad",
+      exportarTextoHtml: 'Genera un archivo <strong>.json</strong> con todos los productos, lotes y recetas registrados. Guarda este archivo (Google Drive, correo, WhatsApp a ti mismo) o úsalo para llevar tus datos a otro celular.',
+      exportarBotao: "⬇ Descargar copia de seguridad", exportarOk: "Copia descargada ✓",
+      importarTitulo: "Importar copia de seguridad",
+      importarTextoHtml: 'Elige un archivo <strong>.json</strong> exportado anteriormente. <strong>Atención:</strong> esto reemplaza todo lo registrado en este dispositivo ahora.',
+      importarLabel: "Archivo de copia de seguridad", importarBotao: "Restaurar desde este archivo",
+      importarEscolha: "Elige un archivo primero.",
+      importarInvalido: "Archivo inválido — no es un JSON de copia de seguridad válido.",
+      importarNaoReconhecido: "Archivo no reconocido como copia de seguridad de Fornada.",
+      importarConfirm: (p,l,r) => `Este archivo tiene ${p} producto(s), ${l} lote(s) y ${r} receta(s).\n\nEsto REEMPLAZARÁ todo lo registrado en este dispositivo ahora. ¿Deseas continuar?`,
+      importarOk: "Copia de seguridad restaurada con éxito ✓",
+      importarErroLeitura: "No se pudo leer el archivo.",
+      produtoRemovido: "(producto eliminado)",
+      cadastrePrimeiro: "Registra primero un producto activo"
+    }
+  };
+
+  const IDIOMA_KEY = "fornada_idioma";
+  let idiomaAtual = localStorage.getItem(IDIOMA_KEY) || "pt";
+
+  function t(chave, ...args){
+    const dict = TRADUCOES[idiomaAtual] || TRADUCOES.pt;
+    const valor = dict[chave] !== undefined ? dict[chave] : TRADUCOES.pt[chave];
+    return typeof valor === "function" ? valor(...args) : valor;
+  }
+
+  function localeDoIdioma(){
+    return idiomaAtual === "en" ? "en-US" : idiomaAtual === "es" ? "es-ES" : "pt-BR";
+  }
 
   // ---------- Armazenamento ----------
   const CHAVE = {
@@ -639,9 +854,9 @@
     const a = paraData(isoAlvo), b = paraData(isoBase);
     return Math.round((a - b) / (1000*60*60*24));
   }
-  function formatarBR(iso){
+  function formatarData(iso){
     const [a,m,d] = iso.split("-");
-    return `${d}/${m}/${a}`;
+    return idiomaAtual === "en" ? `${m}/${d}/${a}` : `${d}/${m}/${a}`;
   }
 
   function statusLote(dataValidade){
@@ -651,11 +866,47 @@
     return "ok";
   }
 
-  const LABEL_STATUS = { ok: "OK", aviso: "Vencendo", vencido: "Vencido" };
+  function labelStatus(status){
+    return { ok: t("statusOk"), aviso: t("statusAviso"), vencido: t("statusVencido") }[status];
+  }
 
   // ---------- Cabeçalho: data de hoje ----------
-  document.getElementById("hoje-label").textContent =
-    "Hoje: " + new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
+  function atualizarHojeLabel(){
+    document.getElementById("hoje-label").textContent =
+      t("hoje") + ": " + new Date().toLocaleDateString(localeDoIdioma(), { weekday: "long", day: "2-digit", month: "long" });
+  }
+
+  // ---------- Aplicação de idioma ----------
+  function aplicarTraducoesEstaticas(){
+    document.documentElement.lang = idiomaAtual === "en" ? "en" : idiomaAtual === "es" ? "es" : "pt-BR";
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      el.textContent = t(el.dataset.i18n);
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(el => {
+      el.innerHTML = t(el.dataset.i18nHtml);
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+      el.placeholder = t(el.dataset.i18nPlaceholder);
+    });
+    atualizarHojeLabel();
+  }
+
+  const botoesIdioma = document.querySelectorAll(".idioma-opcao");
+  function marcarIdiomaAtivo(){
+    botoesIdioma.forEach(b => b.classList.toggle("active", b.dataset.lang === idiomaAtual));
+  }
+  botoesIdioma.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if(btn.dataset.lang === idiomaAtual) return;
+      idiomaAtual = btn.dataset.lang;
+      localStorage.setItem(IDIOMA_KEY, idiomaAtual);
+      marcarIdiomaAtivo();
+      aplicarTraducoesEstaticas();
+      renderizarTudoProducao();
+      renderizarTudoProdutos();
+      renderizarTudoReceitas();
+    });
+  });
 
   // ---------- Navegação por abas ----------
   const botoesTab = document.querySelectorAll("nav.tabbar button");
@@ -695,7 +946,7 @@
     const produtosAtivos = produtos.filter(ehAtivo);
     if(produtosAtivos.length === 0){
       const op = document.createElement("option");
-      op.textContent = "Cadastre um produto ativo primeiro";
+      op.textContent = t("cadastrePrimeiro");
       op.value = "";
       selProduto.appendChild(op);
       return;
@@ -716,7 +967,7 @@
       return;
     }
     const validade = somarDias(inputDataInicio.value, produto.validadeDias);
-    previewValidade.textContent = `Validade calculada: ${formatarBR(validade)} (${produto.validadeDias} dia(s))`;
+    previewValidade.textContent = t("validadeCalculada", formatarData(validade), produto.validadeDias);
   }
 
   selProduto.addEventListener("change", atualizarPreviewValidade);
@@ -751,9 +1002,9 @@
       const ficha = document.createElement("div");
       ficha.className = "ficha-falta";
       ficha.innerHTML = `
-        <span class="stamp">EM FALTA</span>
+        <span class="stamp">${t("stamp")}</span>
         <div class="nome">${escapeHtml(p.nome)}</div>
-        <div class="toque">toque para registrar</div>
+        <div class="toque">${t("toqueRegistrar")}</div>
       `;
       ficha.addEventListener("click", () => irParaProducaoComProduto(p.id));
       board.appendChild(ficha);
@@ -764,13 +1015,13 @@
     const lista = document.getElementById("lista-lotes");
     lista.innerHTML = "";
     if(lotes.length === 0){
-      lista.innerHTML = '<div class="lista-vazia">Nenhum lote registrado ainda.</div>';
+      lista.innerHTML = `<div class="lista-vazia">${t("nenhumLote")}</div>`;
       return;
     }
     const ordenados = lotes.slice().sort((a,b) => paraData(a.dataValidade) - paraData(b.dataValidade));
     ordenados.forEach(l => {
       const produto = produtos.find(p => p.id === l.produtoId);
-      const nome = produto ? produto.nome : "(produto removido)";
+      const nome = produto ? produto.nome : t("produtoRemovido");
       const status = statusLote(l.dataValidade);
       const item = document.createElement("div");
       item.className = "lote-item";
@@ -778,10 +1029,10 @@
         <div class="dot ${status}"></div>
         <div class="lote-info">
           <div class="nome">${escapeHtml(nome)}</div>
-          <div class="datas">Início ${formatarBR(l.dataInicio)} · Validade ${formatarBR(l.dataValidade)}</div>
-          <span class="tag ${status}">${LABEL_STATUS[status]}</span>
+          <div class="datas">${t("inicioAbrev")} ${formatarData(l.dataInicio)} · ${t("validadeAbrev")} ${formatarData(l.dataValidade)}</div>
+          <span class="tag ${status}">${labelStatus(status)}</span>
         </div>
-        <button class="btn-perigo" data-id="${l.id}" aria-label="Remover lote">Remover</button>
+        <button class="btn-perigo" data-id="${l.id}" aria-label="${t('remover')}">${t("remover")}</button>
       `;
       item.querySelector("button").addEventListener("click", () => {
         lotes = lotes.filter(x => x.id !== l.id);
@@ -829,17 +1080,17 @@
     item.className = "produto-item" + (arquivado ? " arquivado" : "");
     item.innerHTML = `
       <div class="produto-info">
-        <div class="nome">${escapeHtml(p.nome)} ${temReceita(p.id) ? '<span class="badge-receita">Com receita</span>' : ''} ${arquivado ? '<span class="badge-arquivado">Arquivado</span>' : ''}</div>
+        <div class="nome">${escapeHtml(p.nome)} ${temReceita(p.id) ? `<span class="badge-receita">${t("comReceita")}</span>` : ''} ${arquivado ? `<span class="badge-arquivado">${t("arquivadoBadge")}</span>` : ''}</div>
         ${p.codigo ? `<span class="codigo">${escapeHtml(p.codigo)}</span>` : ''}
-        <div class="validade">Validade padrão: ${p.validadeDias} dia(s)</div>
+        <div class="validade">${t("validadePadraoTexto", p.validadeDias)}</div>
       </div>
       <div class="produto-acoes">
         ${arquivado
-          ? '<button class="icon-btn" data-acao="desarquivar" aria-label="Desarquivar produto" title="Desarquivar">↩</button>'
-          : '<button class="icon-btn" data-acao="arquivar" aria-label="Arquivar produto" title="Arquivar">🗄</button>'
+          ? `<button class="icon-btn" data-acao="desarquivar" aria-label="${t('acaoDesarquivar')}" title="${t('acaoDesarquivar')}">↩</button>`
+          : `<button class="icon-btn" data-acao="arquivar" aria-label="${t('acaoArquivar')}" title="${t('acaoArquivar')}">🗄</button>`
         }
-        <button class="icon-btn" data-acao="editar" aria-label="Editar produto">✎</button>
-        <button class="icon-btn" data-acao="remover" aria-label="Remover produto">🗑</button>
+        <button class="icon-btn" data-acao="editar" aria-label="${t('acaoEditar')}">✎</button>
+        <button class="icon-btn" data-acao="remover" aria-label="${t('acaoRemover')}">🗑</button>
       </div>
     `;
     item.querySelector('[data-acao="editar"]').addEventListener("click", () => editarProduto(p.id));
@@ -868,7 +1119,7 @@
     const lista = document.getElementById("lista-produtos-filtrada");
     const mostrarArquivados = filtroProdutosAtual === "arquivado";
 
-    tituloListaProdutos.textContent = mostrarArquivados ? "Produtos arquivados" : "Produtos ativos";
+    tituloListaProdutos.textContent = mostrarArquivados ? t("tituloProdutosArquivados") : t("tituloProdutosAtivos");
 
     const filtrados = produtos
       .filter(p => mostrarArquivados ? !ehAtivo(p) : ehAtivo(p))
@@ -878,8 +1129,8 @@
     lista.innerHTML = "";
     if(filtrados.length === 0){
       lista.innerHTML = mostrarArquivados
-        ? '<div class="lista-vazia">Nenhum produto arquivado.</div>'
-        : '<div class="lista-vazia">Nenhum produto ativo ainda.</div>';
+        ? `<div class="lista-vazia">${t("nenhumProdutoArquivado")}</div>`
+        : `<div class="lista-vazia">${t("nenhumProdutoAtivo")}</div>`;
       return;
     }
     filtrados.forEach(p => lista.appendChild(criarItemProduto(p, mostrarArquivados)));
@@ -888,11 +1139,11 @@
   function editarProduto(id){
     const p = produtos.find(x => x.id === id);
     if(!p) return;
-    const novoCodigo = prompt("Código do produto:", p.codigo || "");
+    const novoCodigo = prompt(t("promptCodigo"), p.codigo || "");
     if(novoCodigo === null) return;
-    const novoNome = prompt("Nome do produto:", p.nome);
+    const novoNome = prompt(t("promptNome"), p.nome);
     if(novoNome === null) return;
-    const novaValidade = prompt("Validade padrão (dias):", p.validadeDias);
+    const novaValidade = prompt(t("promptValidade"), p.validadeDias);
     if(novaValidade === null) return;
     const diasNum = Number(novaValidade);
     if(novoNome.trim() === "" || isNaN(diasNum) || diasNum < 0) return;
@@ -908,7 +1159,7 @@
   function arquivarProduto(id){
     const p = produtos.find(x => x.id === id);
     if(!p) return;
-    const ok = confirm(`Arquivar "${p.nome}"? Os lotes ativos dele serão removidos (a receita continua salva). Ele deixa de aparecer em "Em falta" e no formulário de produção.`);
+    const ok = confirm(t("confirmArquivar", p.nome));
     if(!ok) return;
     p.status = "arquivado";
     lotes = lotes.filter(l => l.produtoId !== id);
@@ -932,7 +1183,7 @@
   function removerProduto(id){
     const p = produtos.find(x => x.id === id);
     if(!p) return;
-    const ok = confirm(`Remover "${p.nome}"? Os lotes e a receita associados também serão removidos.`);
+    const ok = confirm(t("confirmRemoverProduto", p.nome));
     if(!ok) return;
     produtos = produtos.filter(x => x.id !== id);
     lotes = lotes.filter(l => l.produtoId !== id);
@@ -979,7 +1230,7 @@
     );
     lista.innerHTML = "";
     if(produtos.length === 0){
-      lista.innerHTML = '<div class="lista-vazia">Cadastre produtos na aba Produtos para começar a adicionar receitas.</div>';
+      lista.innerHTML = `<div class="lista-vazia">${t("receitasVazio")}</div>`;
       return;
     }
     produtos.slice().sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
@@ -989,18 +1240,18 @@
       item.dataset.produtoId = p.id;
       item.innerHTML = `
         <div class="receita-cabecalho">
-          <div class="nome">${escapeHtml(p.nome)} <span class="badge-receita" style="display:${temReceita(p.id) ? 'inline-block' : 'none'};">Com receita</span></div>
+          <div class="nome">${escapeHtml(p.nome)} <span class="badge-receita" style="display:${temReceita(p.id) ? 'inline-block' : 'none'};">${t("comReceita")}</span></div>
           <span class="seta">▸</span>
         </div>
         <div class="receita-corpo">
-          <label>Ingredientes</label>
+          <label>${t("ingredientes")}</label>
           <div class="lista-ingredientes"></div>
-          <button type="button" class="btn btn-secundario btn-add-ingrediente">+ Adicionar ingrediente</button>
+          <button type="button" class="btn btn-secundario btn-add-ingrediente">${t("addIngrediente")}</button>
 
-          <label>Modo de preparo</label>
-          <textarea class="input-modo-preparo" placeholder="Descreva o passo a passo do preparo...">${escapeHtml(receita.modoPreparo || "")}</textarea>
+          <label>${t("modoPreparo")}</label>
+          <textarea class="input-modo-preparo" placeholder="${t('modoPreparoPlaceholder')}">${escapeHtml(receita.modoPreparo || "")}</textarea>
 
-          <div class="campo-hint status-salvo">As alterações salvam automaticamente.</div>
+          <div class="campo-hint status-salvo">${t("salvoAuto")}</div>
         </div>
       `;
 
@@ -1024,10 +1275,10 @@
         salvarReceita({ produtoId: p.id, ingredientes: ingredientesFinais, modoPreparo });
         badge.style.display = temReceita(p.id) ? "inline-block" : "none";
         renderizarListaProdutos();
-        statusSalvo.textContent = "Salvo ✓";
+        statusSalvo.textContent = t("salvoOk");
         clearTimeout(statusSalvo._timer);
         statusSalvo._timer = setTimeout(() => {
-          statusSalvo.textContent = "As alterações salvam automaticamente.";
+          statusSalvo.textContent = t("salvoAuto");
         }, 1500);
       }
       const salvarComAtraso = debounce(coletarESalvar, 400);
@@ -1036,9 +1287,9 @@
         const linha = document.createElement("div");
         linha.className = "ingrediente-linha";
         linha.innerHTML = `
-          <input type="text" placeholder="Ingrediente" value="${escapeHtml(nome || "")}" data-campo="nome">
-          <input type="text" placeholder="Quantidade" value="${escapeHtml(qtd || "")}" data-campo="qtd">
-          <button type="button" aria-label="Remover ingrediente">✕</button>
+          <input type="text" placeholder="${t('ingredientePlaceholder')}" value="${escapeHtml(nome || "")}" data-campo="nome">
+          <input type="text" placeholder="${t('qtdPlaceholder')}" value="${escapeHtml(qtd || "")}" data-campo="qtd">
+          <button type="button" aria-label="${t('removerIngredienteAria')}">✕</button>
         `;
         linha.querySelectorAll("input").forEach(inp => {
           inp.addEventListener("input", salvarComAtraso);
@@ -1103,14 +1354,14 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    statusExportar.textContent = "Backup baixado ✓";
+    statusExportar.textContent = t("exportarOk");
     setTimeout(() => { statusExportar.textContent = ""; }, 2500);
   });
 
   btnImportar.addEventListener("click", () => {
     const arquivo = inputImportar.files && inputImportar.files[0];
     if(!arquivo){
-      statusImportar.textContent = "Escolha um arquivo primeiro.";
+      statusImportar.textContent = t("importarEscolha");
       return;
     }
     const leitor = new FileReader();
@@ -1119,7 +1370,7 @@
       try{
         dados = JSON.parse(leitor.result);
       }catch(e){
-        statusImportar.textContent = "Arquivo inválido — não é um JSON de backup válido.";
+        statusImportar.textContent = t("importarInvalido");
         return;
       }
       const produtosImportados = Array.isArray(dados.produtos) ? dados.produtos : null;
@@ -1127,12 +1378,12 @@
       const receitasImportadas = Array.isArray(dados.receitas) ? dados.receitas : null;
 
       if(!produtosImportados || !lotesImportados || !receitasImportadas){
-        statusImportar.textContent = "Arquivo não reconhecido como backup do Fornada.";
+        statusImportar.textContent = t("importarNaoReconhecido");
         return;
       }
 
       const ok = confirm(
-        `Este arquivo tem ${produtosImportados.length} produto(s), ${lotesImportados.length} lote(s) e ${receitasImportadas.length} receita(s).\n\nIsso vai SUBSTITUIR tudo que está cadastrado neste aparelho agora. Deseja continuar?`
+        t("importarConfirm", produtosImportados.length, lotesImportados.length, receitasImportadas.length)
       );
       if(!ok) return;
 
@@ -1148,16 +1399,18 @@
       renderizarTudoReceitas();
 
       inputImportar.value = "";
-      statusImportar.textContent = "Backup restaurado com sucesso ✓";
+      statusImportar.textContent = t("importarOk");
       setTimeout(() => { statusImportar.textContent = ""; }, 3000);
     };
     leitor.onerror = () => {
-      statusImportar.textContent = "Não foi possível ler o arquivo.";
+      statusImportar.textContent = t("importarErroLeitura");
     };
     leitor.readAsText(arquivo);
   });
 
   // ---------- Inicialização ----------
+  marcarIdiomaAtivo();
+  aplicarTraducoesEstaticas();
   inputDataInicio.value = hojeISO();
   renderizarTudoProducao();
   renderizarTudoProdutos();
